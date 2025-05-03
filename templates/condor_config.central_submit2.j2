@@ -1,0 +1,51 @@
+######################################################################
+## condor_config - Основной конфигурационный файл HTCondor
+######################################################################
+
+# Базовые настройки путей
+RELEASE_DIR = /usr
+LOCAL_DIR = /var
+
+# Безопасность: Используем современные методы аутентификации
+SEC_DEFAULT_AUTHENTICATION_METHODS = PASSWORD, FS
+SEC_DEFAULT_AUTHENTICATION = REQUIRED
+SEC_DAEMON_AUTHENTICATION = REQUIRED
+SEC_NEGOTIATOR_AUTHENTICATION = REQUIRED
+
+# Парольный файл (убедитесь, что файл существует и имеет права 600)
+SEC_PASSWORD_FILE = /etc/condor/passwords.d/POOL
+
+# Сетевые настройки
+CONDOR_HOST = 192.168.56.101
+NETWORK_INTERFACE = $(CONDOR_HOST)  # Автоматически использует IP центрального менеджера
+COLLECTOR_HOST = $(CONDOR_HOST)
+BIND_ALL_INTERFACES = False
+
+# Права доступа
+ALLOW_READ = *
+ALLOW_WRITE = *
+ALLOW_DAEMON = condor_pool@$(CONDOR_HOST), condor@$(CONDOR_HOST)
+ALLOW_NEGOTIATOR = $(ALLOW_DAEMON)
+
+# Роли узла (Central Manager + Submit + Execute)
+SHARED_PORT = True
+DAEMON_LIST = COLLECTOR, NEGOTIATOR, SCHEDD, STARTD, SHARED_PORT
+SHARED_PORT_ARGS = -p 9618
+# Оптимизация производительности для небольших пулов
+SCHEDD_INTERVAL = 5
+NEGOTIATOR_INTERVAL = 2
+STARTER_UPDATE_INTERVAL = 5
+
+# Поддержка Ansible (автоматическая подстановка IP)
+# Для работы с Ansible раскомментируйте следующую строку:
+# ALLOW_WRITE_COLLECTOR = $(ALLOW_WRITE), {{ ansible_default_ipv4.address }}
+
+# Исправленные пути
+RUN     = $(LOCAL_DIR)/run/condor
+LOG     = $(LOCAL_DIR)/log/condor
+SPOOL   = $(LOCAL_DIR)/spool/condor
+EXECUTE = $(LOCAL_DIR)/lib/condor/execute
+
+# Безопасность SSL (для Debian/Ubuntu)
+AUTH_SSL_SERVER_CAFILE   = /etc/ssl/certs/ca-certificates.crt
+AUTH_SSL_CLIENT_CAFILE   = /etc/ssl/certs/ca-certificates.crt

@@ -1,0 +1,298 @@
+000 (001.000.000) 2025-05-03 04:09:48 Job submitted from host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=schedd_775_29fc>
+...
+000 (001.001.000) 2025-05-03 04:09:48 Job submitted from host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=schedd_775_29fc>
+...
+001 (001.000.000) 2025-05-03 04:10:07 Job executing on host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=startd_775_29fc>
+	SlotName: slot1_1@master
+	CondorScratchDir = "/var/lib/condor/execute/dir_9393"
+	Cpus = 1
+	Disk = 14568
+	Memory = 128
+...
+001 (001.001.000) 2025-05-03 04:10:07 Job executing on host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=startd_775_29fc>
+	SlotName: slot1_2@master
+	CondorScratchDir = "/var/lib/condor/execute/dir_9394"
+	Cpus = 1
+	Disk = 14568
+	Memory = 128
+...
+006 (001.000.000) 2025-05-03 04:10:13 Image size of job updated: 436
+	1  -  MemoryUsage of job (MB)
+	260  -  ResidentSetSize of job (KB)
+...
+006 (001.001.000) 2025-05-03 04:10:13 Image size of job updated: 512
+	1  -  MemoryUsage of job (MB)
+	252  -  ResidentSetSize of job (KB)
+...
+006 (001.000.000) 2025-05-03 04:10:18 Image size of job updated: 476
+	1  -  MemoryUsage of job (MB)
+	260  -  ResidentSetSize of job (KB)
+...
+005 (001.000.000) 2025-05-03 04:10:18 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :        0        1         1 
+	   Disk (KB)            :        1    10240     14568 
+	   Memory (MB)          :        1       10       128 
+	   TimeExecute (s)      :       11                    
+	   TimeSlotBusy (s)     :       11                    
+
+	Job terminated of its own accord at 2025-05-03T04:10:18Z with exit-code 0.
+...
+005 (001.001.000) 2025-05-03 04:10:18 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :        0        1         1 
+	   Disk (KB)            :        1    10240     14568 
+	   Memory (MB)          :        1       10       128 
+	   TimeExecute (s)      :       11                    
+	   TimeSlotBusy (s)     :       11                    
+
+	Job terminated of its own accord at 2025-05-03T04:10:18Z with exit-code 0.
+...
+000 (002.000.000) 2025-05-03 04:12:23 Job submitted from host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=schedd_775_29fc>
+...
+000 (002.001.000) 2025-05-03 04:12:23 Job submitted from host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=schedd_775_29fc>
+...
+001 (002.000.000) 2025-05-03 04:12:39 Job executing on host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=startd_775_29fc>
+	SlotName: slot1_1@master
+	CondorScratchDir = "/var/lib/condor/execute/dir_9654"
+	Cpus = 1
+	Disk = 14568
+	Memory = 128
+...
+001 (002.001.000) 2025-05-03 04:12:39 Job executing on host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=startd_775_29fc>
+	SlotName: slot1_2@master
+	CondorScratchDir = "/var/lib/condor/execute/dir_9655"
+	Cpus = 1
+	Disk = 14568
+	Memory = 128
+...
+006 (002.001.000) 2025-05-03 04:12:45 Image size of job updated: 624
+	1  -  MemoryUsage of job (MB)
+	248  -  ResidentSetSize of job (KB)
+...
+006 (002.000.000) 2025-05-03 04:12:45 Image size of job updated: 424
+	1  -  MemoryUsage of job (MB)
+	264  -  ResidentSetSize of job (KB)
+...
+006 (002.000.000) 2025-05-03 04:12:49 Image size of job updated: 632
+	1  -  MemoryUsage of job (MB)
+	264  -  ResidentSetSize of job (KB)
+...
+006 (002.001.000) 2025-05-03 04:12:49 Image size of job updated: 700
+	1  -  MemoryUsage of job (MB)
+	248  -  ResidentSetSize of job (KB)
+...
+005 (002.000.000) 2025-05-03 04:12:49 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :        0        1         1 
+	   Disk (KB)            :        1    10240     14568 
+	   Memory (MB)          :        1       10       128 
+	   TimeExecute (s)      :       10                    
+	   TimeSlotBusy (s)     :       10                    
+
+	Job terminated of its own accord at 2025-05-03T04:12:49Z with exit-code 0.
+...
+005 (002.001.000) 2025-05-03 04:12:50 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :        0        1         1 
+	   Disk (KB)            :        1    10240     14568 
+	   Memory (MB)          :        1       10       128 
+	   TimeExecute (s)      :       10                    
+	   TimeSlotBusy (s)     :       10                    
+
+	Job terminated of its own accord at 2025-05-03T04:12:49Z with exit-code 0.
+...
+000 (003.000.000) 2025-05-03 04:16:33 Job submitted from host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=schedd_775_29fc>
+...
+000 (003.001.000) 2025-05-03 04:16:33 Job submitted from host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=schedd_775_29fc>
+...
+040 (003.000.000) 2025-05-03 04:16:39 Started transferring input files
+	Transferring to host: <192.168.56.105:9618?addrs=192.168.56.105-9618&alias=kuber&noUDP&sock=slot1_1_4949_c4a2_1>
+...
+001 (003.001.000) 2025-05-03 04:16:39 Job executing on host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=startd_775_29fc>
+	SlotName: slot1_1@master
+	CondorScratchDir = "/var/lib/condor/execute/dir_12482"
+	Cpus = 1
+	Disk = 14568
+	Memory = 128
+...
+040 (003.000.000) 2025-05-03 04:16:39 Finished transferring input files
+...
+001 (003.000.000) 2025-05-03 04:16:40 Job executing on host: <192.168.56.105:9618?addrs=192.168.56.105-9618&alias=kuber&noUDP&sock=startd_4911_1db1>
+	SlotName: slot1_1@kuber
+	CondorScratchDir = "/var/lib/condor/execute/dir_4977"
+	Cpus = 1
+	Disk = 15511
+	Memory = 128
+...
+006 (003.001.000) 2025-05-03 04:16:45 Image size of job updated: 512
+	1  -  MemoryUsage of job (MB)
+	264  -  ResidentSetSize of job (KB)
+...
+006 (003.000.000) 2025-05-03 04:16:45 Image size of job updated: 512
+	1  -  MemoryUsage of job (MB)
+	260  -  ResidentSetSize of job (KB)
+...
+005 (003.001.000) 2025-05-03 04:16:49 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :        0        1         1 
+	   Disk (KB)            :        1    10240     14568 
+	   Memory (MB)          :        1       10       128 
+	   TimeExecute (s)      :       10                    
+	   TimeSlotBusy (s)     :       10                    
+
+	Job terminated of its own accord at 2025-05-03T04:16:49Z with exit-code 0.
+...
+006 (003.000.000) 2025-05-03 04:16:50 Image size of job updated: 628
+	1  -  MemoryUsage of job (MB)
+	260  -  ResidentSetSize of job (KB)
+...
+040 (003.000.000) 2025-05-03 04:16:50 Started transferring output files
+...
+040 (003.000.000) 2025-05-03 04:16:50 Finished transferring output files
+...
+005 (003.000.000) 2025-05-03 04:16:50 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	40  -  Run Bytes Sent By Job
+	87  -  Run Bytes Received By Job
+	40  -  Total Bytes Sent By Job
+	87  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :        0        1         1 
+	   Disk (KB)            :       14    10240     15511 
+	   Memory (MB)          :        1       10       128 
+	   TimeExecute (s)      :       10                    
+	   TimeSlotBusy (s)     :       11                    
+
+	Job terminated of its own accord at 2025-05-03T04:16:50Z with exit-code 0.
+...
+000 (004.000.000) 2025-05-03 05:29:14 Job submitted from host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=schedd_775_29fc>
+...
+000 (004.001.000) 2025-05-03 05:29:14 Job submitted from host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=schedd_775_29fc>
+...
+040 (004.000.000) 2025-05-03 05:29:28 Started transferring input files
+	Transferring to host: <192.168.56.105:9618?addrs=192.168.56.105-9618&alias=kuber&noUDP&sock=slot1_1_10091_c5b3_1>
+...
+040 (004.000.000) 2025-05-03 05:29:28 Finished transferring input files
+...
+001 (004.001.000) 2025-05-03 05:29:28 Job executing on host: <192.168.56.101:9618?addrs=192.168.56.101-9618&alias=master&noUDP&sock=startd_775_29fc>
+	SlotName: slot1_1@master
+	CondorScratchDir = "/var/lib/condor/execute/dir_29623"
+	Cpus = 1
+	Disk = 14568
+	Memory = 128
+...
+001 (004.000.000) 2025-05-03 05:29:29 Job executing on host: <192.168.56.105:9618?addrs=192.168.56.105-9618&alias=kuber&noUDP&sock=startd_10053_19ad>
+	SlotName: slot1_1@kuber
+	CondorScratchDir = "/var/lib/condor/execute/dir_10173"
+	Cpus = 1
+	Disk = 15510
+	Memory = 128
+...
+006 (004.001.000) 2025-05-03 05:29:33 Image size of job updated: 1
+	0  -  MemoryUsage of job (MB)
+	0  -  ResidentSetSize of job (KB)
+...
+006 (004.000.000) 2025-05-03 05:29:34 Image size of job updated: 1
+	0  -  MemoryUsage of job (MB)
+	0  -  ResidentSetSize of job (KB)
+...
+006 (004.001.000) 2025-05-03 05:29:38 Image size of job updated: 384
+	1  -  MemoryUsage of job (MB)
+	384  -  ResidentSetSize of job (KB)
+...
+005 (004.001.000) 2025-05-03 05:29:38 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :        0        1         1 
+	   Disk (KB)            :        1    10240     14568 
+	   Memory (MB)          :        1       10       128 
+	   TimeExecute (s)      :       10                    
+	   TimeSlotBusy (s)     :       10                    
+
+	Job terminated of its own accord at 2025-05-03T05:29:38Z with exit-code 0.
+...
+006 (004.000.000) 2025-05-03 05:29:39 Image size of job updated: 512
+	1  -  MemoryUsage of job (MB)
+	16  -  ResidentSetSize of job (KB)
+...
+040 (004.000.000) 2025-05-03 05:29:39 Started transferring output files
+...
+040 (004.000.000) 2025-05-03 05:29:39 Finished transferring output files
+...
+005 (004.000.000) 2025-05-03 05:29:39 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	40  -  Run Bytes Sent By Job
+	87  -  Run Bytes Received By Job
+	40  -  Total Bytes Sent By Job
+	87  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :        0        1         1 
+	   Disk (KB)            :       14    10240     15510 
+	   Memory (MB)          :        1       10       128 
+	   TimeExecute (s)      :       10                    
+	   TimeSlotBusy (s)     :       11                    
+
+	Job terminated of its own accord at 2025-05-03T05:29:39Z with exit-code 0.
+...

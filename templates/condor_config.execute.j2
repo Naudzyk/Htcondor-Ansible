@@ -1,0 +1,226 @@
+######################################################################
+##
+##  condor_config
+##
+##  This is the global configuration file for condor. This is where
+##  you define where the local config file is. Any settings
+##  made here may potentially be overridden in the local configuration
+##  file.  KEEP THAT IN MIND!  To double-check that a variable is
+##  getting set from the configuration file that you expect, use
+##  condor_config_val -v <variable name>
+##
+##  condor_config.annotated is a more detailed sample config file
+##
+##  Unless otherwise specified, settings that are commented out show
+##  the defaults that are used if you don't define a value.  Settings
+##  that are defined here MUST BE DEFINED since they have no default
+##  value.
+##
+######################################################################
+
+##  Where have you installed the bin, sbin and lib condor directories?
+RELEASE_DIR = /usr
+
+##  Where is the local condor directory for each host?  This is where the local config file(s), logs and
+##  spool/execute directories are located. this is the default for Linux and Unix systems.
+LOCAL_DIR = /var
+
+##  Where is the machine-specific local config file for each host?
+DAEMON_LIST = STARTD
+##  If your configuration is on a shared file system, then this might be a better default
+#LOCAL_CONFIG_FILE = $(RELEASE_DIR)/etc/$(HOSTNAME).local
+##  If the local config file is not present, is it an error? (WARNING: This is a potential security issue.)
+REQUIRE_LOCAL_CONFIG_FILE = false
+
+##  The normal way to do configuration with RPM and Debian packaging is to read all of the
+##  files in a given directory that don't match a regex as configuration files.
+##  Config files are read in lexicographic order.
+##  Multiple directories may be specified, separated by commas; directories
+##  are read in left-to-right order.
+#LOCAL_CONFIG_DIR = /usr/share/condor/config.d,/etc/condor/config.d
+#LOCAL_CONFIG_DIR_EXCLUDE_REGEXP = ^((\..*)|(.*~)|(#.*)|(.*\.rpmsave)|(.*\.rpmnew))$
+
+##
+## Do NOT use host-based security by default.
+##
+## This was the default for the 8.8 series (and earlier), but it is
+## intrinsically insecure.  To make the 9.0 series secure by default, we
+## commented it out.
+##
+## You should seriously consider improving your security configuration.
+##
+## To continue to use your old security configuration, knowing that it is
+## insecure, add the line 'use SECURITY:HOST_BASED' to your local
+## configuration directory.  Don't just uncomment the final line in this
+## comment block; changes in this file may be lost during your next upgrade.
+## The following shell command will make the change on most Linux systems.
+##
+## echo 'use SECURITY:HOST_BASED' >> $(condor_config_val LOCAL_CONFIG_DIR)/00-insecure.config
+##
+NETWORK_INTERFACE = 192.168.56.105
+CONDOR_HOST = 192.168.56.101
+COLLECTOR_HOST = 192.168.56.101
+ALLOW_READ = *
+ALLOW_WRITE = *
+BIND_ALL_INTERFACES = False
+##  To expand your condor pool beyond a single host, set ALLOW_WRITE to match all of the hosts
+#ALLOW_WRITE = *.cs.wisc.edu
+##  FLOCK_FROM defines the machines that grant access to your pool via flocking. (i.e. these machines can join your pool).
+#FLOCK_FROM =
+##  FLOCK_TO defines the central managers that your schedd will advertise itself to (i.e. these pools will give matches to your schedd).
+#FLOCK_TO = condor.cs.wisc.edu, cm.example.edu
+SEC_DEFAULT_AUTHENTICATION_METHODS = PASSWORD,FS,ANON
+SEC_DEFAULT_AUTHENTICATION = OPTIONAL
+ALLOW_ADMINISTRATOR = kuber@kuber, $(CONDOR_HOST)
+#SEC_DEFAULT_AUTHENTICATION_METHODS = CLAIMTOBE
+FS_REMOTE_DIR = /tmp/condor
+##--------------------------------------------------------------------
+## Values set by the debian patch script:
+##--------------------------------------------------------------------
+
+## For Unix machines, the path and file name of the file containing
+## the pool password for password authentication.
+#SEC_PASSWORD_FILE = $(LOCAL_DIR)/lib/condor/pool_password
+
+##  Pathnames
+RUN     = $(LOCAL_DIR)/run/condor
+LOG     = $(LOCAL_DIR)/log/condor
+LOCK    = $(LOCAL_DIR)/lock/condor
+SPOOL   = $(LOCAL_DIR)/spool/condor
+EXECUTE = $(LOCAL_DIR)/lib/condor/execute
+CRED_STORE_DIR = $(LOCAL_DIR)/lib/condor/cred_dir
+ETC     = /etc/condor
+BIN     = $(RELEASE_DIR)/bin
+LIB     = $(RELEASE_DIR)/lib/condor
+INCLUDE = $(RELEASE_DIR)/include/condor
+SBIN    = $(RELEASE_DIR)/sbin
+LIBEXEC = $(RELEASE_DIR)/libexec/condor
+SHARE   = $(RELEASE_DIR)/share/condor
+GANGLIA_LIB64_PATH = /lib,/usr/lib,/usr/local/lib
+
+# Account for different pki locations for Debian
+AUTH_SSL_SERVER_CAFILE   = /etc/ssl/certs/ca-certificates.crt
+AUTH_SSL_CLIENT_CAFILE   = /etc/ssl/certs/ca-certificates.crt
+AUTH_SSL_SERVER_CERTFILE = /etc/ssl/certs/ssl-cert-snakeoil.pem
+AUTH_SSL_SERVER_KEYFILE  = /etc/ssl/private/ssl-cert-snakeoil.key
+
+##  Install the minihtcondor package to run HTCondor on a single node
+# Разделяем по CPU
+SLOT_PARTITIONING = cpus
+
+##
+## Default security settings
+##
+## Host-based security was the default for the 8.8 series (and earlier).
+##
+## Host-based security assumes that all users on a machine are trusted.
+## For example, if host-based security trusts that a given machine can
+## run jobs, then any user who can start a process on that machine can
+## start a startd that can "steal" jobs from the system.
+#
+## To help make HTCondor secure by default, we removed host-based security
+## from the default configuration file
+## (/etc/condor/condor_config).
+##
+## New installations of HTCondor should be made using the get_htcondor tool,
+## which can automatically establish IDTOKENS-based security across a multi-
+## node pool.  For existing installations, we recommend you
+## consider improving your security configuration.
+##
+## To continue to use your old security configuration,
+## comment out the 'recommended' line below, and uncomment the
+## 'host_based' line.
+##
+
+# use security:host_based
+# use security:recommended_v9_0
+
+
+# HTCONDOR CONFIGURATION TO CREATE A POOL WITH ONE MACHINE
+#
+# This file was created upon initial installation of HTCondor.
+# It contains configuration settings to set up a secure HTCondor
+# installation consisting of **just one single machine**.
+# YOU WILL WANT TO REMOVE THIS FILE IF/WHEN YOU DECIDE TO ADD ADDITIONAL
+# MACHINES TO YOUR HTCONDOR INSTALLATION!  Most of these settings do
+# not make sense if you have a multi-server pool.
+#
+# See the Quick Start Installation guide at:
+#     https://htcondor.org/manual/quickstart.html
+#
+
+# ---  NODE ROLES  ---
+
+# Every pool needs one Central Manager, some number of Submit nodes and
+# as many Execute nodes as you can find. Consult the manual to learn
+# about addtional roles.
+
+use ROLE: Execute
+
+# --- NETWORK SETTINGS ---
+
+# Configure HTCondor services to listen to port 9618 on the IPv4
+# loopback interface.
+
+BIND_ALL_INTERFACES = False
+CONDOR_HOST = 192.168.56.101
+COLLECTOR_HOST = 192.168.56.101
+# --- SECURITY SETTINGS ---
+
+# Verify authenticity of HTCondor services by checking if they are
+# running with an effective user id of user "condor".
+#SEC_DEFAULT_AUTHENTICATION = REQUIRED
+#SEC_DEFAULT_INTEGRITY = REQUIRED
+#ALLOW_DAEMON = condor@$(UID_DOMAIN)
+#ALLOW_NEGOTIATOR = condor@$(UID_DOMAIN)
+# Configure so only user root or user condor can run condor_on,
+# condor_off, condor_restart, and condor_userprio commands to manage
+# HTCondor on this machine.
+# If you wish any user to do so, comment out the line below.
+#ALLOW_ADMINISTRATOR = root@$(UID_DOMAIN) condor@$(UID_DOMAIN)
+
+# Allow anyone (on the loopback interface) to submit jobs.
+ALLOW_WRITE = *
+# Allow anyone (on the loopback interface) to run condor_q or condor_status.
+ALLOW_READ = *
+
+# --- PERFORMANCE TUNING SETTINGS ---
+
+# Since there is just one server in this pool, we can tune various
+# polling intervals to be much more responsive than the system defaults
+# (which are tuned for pools with thousands of servers).  This will
+# enable jobs to be scheduled faster, and job monitoring to happen more
+# frequently.
+SCHEDD_INTERVAL = 5
+NEGOTIATOR_INTERVAL = 2
+NEGOTIATOR_CYCLE_DELAY = 5
+STARTER_UPDATE_INTERVAL = 5
+SHADOW_QUEUE_UPDATE_INTERVAL = 10
+UPDATE_INTERVAL = 5
+RUNBENCHMARKS = 0
+
+# --- COMMON CHANGES ---
+
+# Uncomment the lines below and do 'sudo condor_reconfig' if you wish
+# condor_q to show jobs from all users with one line per job by default.
+#CONDOR_Q_DASH_BATCH_IS_DEFAULT = False
+
+
+SEC_PASSWORD_FILE = /etc/condor/passwords.d/POOL
+#SEC_DEFAULT_AUTHENTICATION_METHODS = PASSWORD,FS,ANON
+SEC_DEFAULT_AUTHENTICATION = REQUIRED
+SEC_DAEMON_AUTHENTICATION = REQUIRED
+SEC_DAEMON_INTEGRITY = REQUIRED
+SEC_DAEMON_AUTHENTICATION_METHODS = PASSWORD
+SEC_NEGOTIATOR_AUTHENTICATION = REQUIRED
+SEC_NEGOTIATOR_INTEGRITY = REQUIRED
+SEC_NEGOTIATOR_AUTHENTICATION_METHODS = PASSWORD
+SEC_CLIENT_AUTHENTICATION_METHODS = FS, PASSWORD, KERBEROS
+#ALLOW_DAEMON = condor_pool@/*,condor_pool@*/192.168.56.101, condor@*/$(IP_ADDRESS)
+#ALLOW_NEGOTIATOR = condor_pool@/*, condor_pool@*/192.168.56.101, condor@*/$(IP_ADDRESS)
+#ALLOW_DAEMON = condor_pool@/*, condor_pool@*/192.168.56.101, condor@*/$(IP_ADDRESS)
+#ALLOW_NEGOTIATOR = condor_pool@/*, condor_pool@*/192.168.56.101, condor@*/$(IP_ADDRESS)
+#DAEMON_LIST = STARTD
+ALLOW_DAEMON = condor_pool@*/* , condor@*/${IP_ADDRESS},kuber@kuber, $(CONDOR_HOST)
+ALLOW_NEGOTIATOR = condor_pool@*/* , condor@/*${IP_ADDRESS},kuber@kuber, $(CONDOR_HOST)
+

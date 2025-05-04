@@ -4,11 +4,10 @@
   gather_facts: yes
   become: yes
   vars:
-    condor_cluster_password: "qwerty"
+    condor_cluster_password: "password"
     central_manager_ip: "192.168.56.101"
     condor_config_path: "/etc/condor/condor_config"
   tasks:
-    # 0. Установка HTCondor (если не установен)
     - name: Install HTCondor
       apt:
         name: condor
@@ -22,7 +21,7 @@
         state: present
         update_cache: yes
       when: ansible_pkg_mgr == "apt"
-    # 1. Создание структуры директорий
+    
     - name: Create HTCondor directories
       file:
         path: "{{ item }}"
@@ -34,14 +33,12 @@
         - /etc/condor
         - /etc/condor/passwords.d
 
-    # 2. Генерация конфигурации для Central Manager
     - name: Configure Central Manager
       template:
         src: templates/condor_config.central_submit2.j2
         dest: /etc/condor/condor_config
       when: "'central_manager' in group_names"
-
-    # 3. Генерация конфигурации для Execute узла
+    
     - name: Configure Execute Node
       template:
         src: templates/condor_config.execute2.j2
@@ -55,7 +52,7 @@
         mode: '0750'
         owner: root
         group: condor
-      when: "'central_manager' in group_names"  # Только для центрального менеджера
+      when: "'central_manager' in group_names"  
 
     - name: Create shared_port_ad file
       file:
@@ -64,16 +61,15 @@
         mode: '0640'
         owner: root
         group: condor
-      when: "'central_manager' in group_names"  # Только для центрального менеджера
-    # 4. Настройка переменной окружения CONDOR_CONFIG
+      when: "'central_manager' in group_names"  
+    
     - name: Set CONDOR_CONFIG environment variable
       lineinfile:
         path: /etc/default/condor
         line: 'CONDOR_CONFIG={{ condor_config_path }}'
         create: yes
         state: present
-
-    # 5. Обновление файла службы systemd для использования CONDOR_CONFIG
+    
     - name: Update condor.service to use custom config
       systemd:
         name: condor
@@ -82,8 +78,7 @@
         state: restarted
       environment:
         CONDOR_CONFIG: /etc/condor/condor_config.local
-
-    # 6. Задание пароля кластера (POOL)
+    
     - name: Ensure passwords.d directory exists
       file:
         path: /etc/condor/passwords.d
@@ -97,8 +92,7 @@
         echo "{{ condor_cluster_password }}" | condor_store_cred -c add -f /etc/condor/passwords.d/POOL
       args:
         creates: /etc/condor/passwords.d/POOL
-
-    # 7. Установка прав на файл пароля
+    
     - name: Set permissions for POOL password file
       file:
         path: /etc/condor/passwords.d/POOL
@@ -106,7 +100,6 @@
         owner: root
         group: condor
 
-    # 8. Перезапуск HTCondor
     - name: Restart HTCondor service
       service:
         name: condor

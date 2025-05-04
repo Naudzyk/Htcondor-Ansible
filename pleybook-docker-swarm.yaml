@@ -7,7 +7,6 @@
     swarm_network_subnet: "10.0.9.0/24"
     swarm_advertise_addr: "{{ ansible_default_ipv4.address }}"
   tasks:
-    # 1. Убедитесь, что Docker установлен
     - name: Install Docker
       apt:
         name: docker.io
@@ -15,14 +14,14 @@
         update_cache: yes
       when: ansible_pkg_mgr == "apt"
 
-    # 2. Запустите и включите службу Docker
+    
     - name: Ensure Docker service is running and enabled
       service:
         name: docker
         state: started
         enabled: yes
 
-    # 3. Инициализация Docker Swarm (если еще не инициализирован)
+    
     - name: Initialize Docker Swarm
       command: >
         docker swarm init --advertise-addr {{ swarm_advertise_addr }}
@@ -30,7 +29,7 @@
       ignore_errors: yes
       changed_when: "'Swarm initialized' in swarm_init_result.stdout"
 
-    # 4. Создание Overlay сети
+    
     - name: Create Docker Swarm Overlay network
       command: >
         docker network create
@@ -41,7 +40,7 @@
       ignore_errors: yes
       changed_when: "'{{ swarm_network_name }}' in overlay_network_result.stdout"
 
-    # 5. Проверка существования Overlay сети
+    
     - name: Check if the Overlay network exists
       command: >
         docker network inspect {{ swarm_network_name }}
@@ -49,7 +48,7 @@
       changed_when: false
       failed_when: network_inspect_result.rc != 0
 
-    # 6. Вывод результатов
+    
     - name: Show Overlay network details
       debug:
         msg: "Overlay network '{{ swarm_network_name }}' created successfully with subnet '{{ swarm_network_subnet }}'"

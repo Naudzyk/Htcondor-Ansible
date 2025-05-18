@@ -58,9 +58,9 @@ DAEMON_LIST = COLLECTOR, NEGOTIATOR, SCHEDD
 ##
 ## echo 'use SECURITY:HOST_BASED' >> $(condor_config_val LOCAL_CONFIG_DIR)/00-insecure.config
 ##
-CONDOR_HOST = 192.168.56.101
-NETWORK_INTERFACE = 192.168.56.101
-COLLECTOR_HOST = 192.168.56.101
+CONDOR_HOST = {{ central_manager_ip }}
+NETWORK_INTERFACE = {{ central_manager_ip }}
+COLLECTOR_HOST = {{ central_manager_ip }}
 ALLOW_READ = *
 ALLOW_WRITE = *
 

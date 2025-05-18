@@ -1,4 +1,4 @@
-- name: Configure HTCondor Cluster in Docker
+x- name: Configure HTCondor Cluster in Docker
   hosts: all
   gather_facts: yes
   become: yes

@@ -57,7 +57,7 @@ REQUIRE_LOCAL_CONFIG_FILE = false
 ##
 ## echo 'use SECURITY:HOST_BASED' >> $(condor_config_val LOCAL_CONFIG_DIR)/00-insecure.config
 ##
-NETWORK_INTERFACE = {{ ansible_enp0s8.ipv4.address }}
+NETWORK_INTERFACE = {{ ansible_default_ipv4.address }}
 CONDOR_HOST = {{ central_manager_ip }}
 COLLECTOR_HOST = {{ central_manager_ip }}
 BIND_ALL_INTERFACES = False

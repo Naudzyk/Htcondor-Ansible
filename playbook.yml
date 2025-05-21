@@ -89,31 +89,6 @@
         restart_policy: unless-stopped
 
 
-##    - name: Install bash in container
-##      community.docker.docker_container_exec:
-##        container: htcondor-node
-##        command:
-##          - apt
-##          - update
-##          - "&&"
-##          - apt
-##          - install
-##          - -y
-##          - bash
-
-##    - name: Set HTCondor cluster password in container
-##      community.docker.docker_container_exec:
-##        container: htcondor-node
-##        command:
-##          - bash
-##          - "-c"
-##          - "echo '{{ condor_cluster_password }}' | condor_store_cred -c add -f /etc/condor/passwords.d/POOL"
-##      args:
-##        chdir: /root
-##      register: password_set
-##      until: password_set is succeeded
-##      retries: 5
-##      delay: 3
     - name: Set HTCondor cluster password in container
       community.docker.docker_container_exec:
         container: htcondor-node
@@ -125,14 +100,3 @@
       delay: 3
       notify: Restart HTCondor container
 
-##    - name: Restart container if config changed
-##      community.docker.docker_container:
-##        name: htcondor-node
-##        image: "{{ condor_image }}"
-##        volumes:
-##          - "{{ condor_config_dir }}:/etc/condor"
-##        force_restart: yes
-##      when: password_set.changed
-##  hendlers:
-##    - name: Restart HTCondor container
-##      command: docker restart htcondor-node

@@ -1,0 +1,485 @@
+---
+- name: Configure HTCondor Cluster with Kubernetes
+  hosts: all
+  gather_facts: yes
+  become: yes
+  vars:
+    condor_cluster_password: "qwerty"
+    central_manager_ip: "10.0.2.15"
+    condor_config_dir: "/etc/condor"
+    condor_logs_dir: "/var/log/condor"
+    condor_image: "evgenii457/htcondor-manager228"
+    kubernetes_version: "v1.28.0"
+    kube_bin_dir: "/usr/local/bin"
+    kubernetes_cni: "flannel"
+
+  pre_tasks:
+    - name:  Kubernetes
+      shell: |
+        curl -L -s https://dl.k8s.io/release/stable.txt
+      register: k8s_version
+      changed_when: false
+      delegate_to: localhost
+      run_once: yes
+
+  handlers:
+    - name: Restart Docker
+      service:
+        name: docker
+        state: restarted
+
+    - name: Restart kubelet
+      service:
+        name: kubelet
+        state: restarted
+
+    - name: Restart HTCondor container
+      command: docker restart htcondor-node
+      when: "'central_manager' in group_names"
+
+  tasks:
+    - name: 
+      package:
+        name:
+          - curl
+          - apt-transport-https
+          - ca-certificates
+          - gnupg
+          - lsb-release
+        state: present
+        update_cache: yes
+
+    - name: Отключение swap
+      command: swapoff -a
+      ignore_errors: yes
+
+    - name: Удаление swap из fstab
+      lineinfile:
+        path: /etc/fstab
+        line: '#{{ item }}'
+        backrefs: yes
+      loop:
+        - '.*swap.*'
+
+    - name: Создание директории для Kubernetes бинарников
+      file:
+        path: "{{ kube_bin_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Скачивание kubelet
+      get_url:
+        url: "https://storage.googleapis.com/kubernetes-release/release/ {{ kubernetes_version }}/bin/linux/amd64/kubelet"
+        dest: "{{ kube_bin_dir }}/kubelet"
+        mode: 0755
+
+    - name: Скачивание kubeadm
+      get_url:
+        url: "https://storage.googleapis.com/kubernetes-release/release/ {{ kubernetes_version }}/bin/linux/amd64/kubeadm"
+        dest: "{{ kube_bin_dir }}/kubeadm"
+        mode: 0755
+
+    - name: Скачивание kubectl
+      get_url:
+        url: "https://storage.googleapis.com/kubernetes-release/release/ {{ kubernetes_version }}/bin/linux/amd64/kubectl"
+        dest: "{{ kube_bin_dir }}/kubectl"
+        mode: 0755
+
+    - name: Проверка установленных компонентов
+      command: "{{ item.cmd }}"
+      loop:
+        - { cmd: "{{ kube_bin_dir }}/kubelet  --version" }
+        - { cmd: "{{ kube_bin_dir }}/kubeadm version" }
+        - { cmd: "{{ kube_bin_dir }}/kubectl version --client" }
+      loop_control:
+        label: "{{ item.cmd }}"
+      register: kubernetes_check
+      changed_when: false
+
+    - name: Установка CNI плагина (Flannel)
+      get_url:
+        url: "https://github.com/coreos/flannel/raw/master/Documentation/kube-flannel.yml "
+        dest: "/tmp/kube-flannel.yml"
+
+    - name: Создание systemd unit для kubelet
+      template:
+        src: templates/kubelet.service.j2
+        dest: /etc/systemd/system/kubelet.service
+
+    - name: Создание drop-in конфига для kubelet
+      template:
+        src: templates/10-kubelet.conf.j2
+        dest: /etc/systemd/system/kubelet.service.d/10-kubelet.conf
+
+    - name: Перезагрузка systemd
+      systemd:
+        daemon_reload: yes
+
+    - name: Включение и запуск kubelet
+      service:
+        name: kubelet
+        enabled: yes
+        state: started
+
+    - name: Установка containerd
+      package:
+        name: containerd
+        state: present
+        update_cache: yes
+
+    - name: Генерация конфигурации containerd
+      command: containerd config default > /etc/containerd/config.toml
+
+    - name: Включение SystemdCgroup в containerd
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: 'SystemdCgroup = false'
+        line: 'SystemdCgroup = true'
+
+    - name: Перезапуск containerd
+      service:
+        name: containerd
+        state: restarted
+        enabled: yes
+
+    - name: Создание директории /etc/condor
+      file:
+        path: "{{ condor_config_dir }}"
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Создание директории /var/log/condor
+      file:
+        path: "{{ condor_logs_dir }}"
+        state: directory
+        mode: '0750'
+        owner: root
+        group: root
+
+    - name: Создание директории passwords.d
+      file:
+        path: "{{ condor_config_dir }}/passwords.d"
+        state: directory
+        mode: '0750'
+        owner: root
+        group: root
+
+    - name: Установка Docker
+      package:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Запуск и включение Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Проверка наличия Docker
+      command: docker --version
+      register: docker_version
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Настройка Central Manager (standard config path)
+      template:
+        src: templates/condor_config.central_submit.j2
+        dest: "{{ condor_config_dir }}/condor_config"
+      when: "'central_manager' in group_names"
+
+    - name: Настройка Execute Node (standard config path)
+      template:
+        src: templates/condor_config.execute2.j2
+        dest: "{{ condor_config_dir }}/condor_config"
+      when: "'execute_nodes' in group_names"
+
+    - name: Создание shared_port_ad файла (standard path)
+      file:
+        path: "{{ condor_logs_dir }}/shared_port_ad"
+        state: touch
+        mode: '0750'
+        owner: root
+        group: root
+      when: "'central_manager' in group_names"
+
+    - name: Запуск HTCondor Docker контейнера
+      docker_container:
+        name: htcondor-node
+        image: "{{ condor_image }}"
+        volumes:
+          - "{{ condor_config_dir }}:/etc/condor"
+        ports:
+          - "9618:9618"
+        env:
+          CONDOR_CONFIG: "/etc/condor/condor_config"
+          CONDOR_HOST: "{{ central_manager_ip }}"
+          NETWORK_INTERFACE: "{{ central_manager_ip }}"
+        network_mode: host
+        privileged: yes
+        restart_policy: unless-stopped
+      when: "'central_manager' in group_names"
+      notify: Restart HTCondor container
+
+    - name: Установка пароля кластера HTCondor
+      community.docker.docker_container_exec:
+        container: htcondor-node
+        command: "bash -c 'echo \"{{ condor_cluster_password }}\" | condor_store_cred -c add -f /etc/condor/passwords.d/POOL'"
+        chdir: /root
+      register: password_set
+      until: password_set is succeeded
+      retries: 5
+      delay: 3
+      when: "'central_manager' in group_names"
+      notify: Restart HTCondor container
+
+    - name: Очистка старого кластера Kubernetes
+      command: "{{ kube_bin_dir }}/kubeadm reset --force"
+      ignore_errors: yes
+      when: "'central_manager' in group_names"
+
+    - name: Удаление старых конфигов Kubernetes
+      file:
+        path: "/etc/kubernetes"
+        state: absent
+      when: "'central_manager' in group_names"
+
+    - name: Назначение IP-адреса на интерфейс enp0s3
+      shell: |
+        sudo ip addr add {{ central_manager_ip }}/24 dev enp0s3 || true
+        sudo ip link set enp0s3 up
+      when: "'central_manager' in group_names"
+
+    - name: Удаление маршрута через enp0s8
+      shell: |
+        sudo ip route del default via 192.168.56.1 dev enp0s8 || true
+      when: "'central_manager' in group_names"
+
+    - name: Установка маршрута по умолчанию через enp0s3
+      shell: |
+        sudo ip route add default via 10.0.2.2 dev enp0s3
+      when: "'central_manager' in group_names"
+
+    - name: Инициализация Kubernetes кластера
+      command: |
+        {{ kube_bin_dir }}/kubeadm init \
+          --control-plane-endpoint "{{ central_manager_ip }}" \
+          --apiserver-advertise-address="{{ central_manager_ip }}" \
+          --pod-network-cidr=10.244.0.0/16 \
+          --image-repository registry.aliyuncs.com/google_containers \
+          --v=5
+      args:
+        chdir: "{{ kube_bin_dir }}"
+      register: cluster_init
+      ignore_errors: yes
+      when: "'central_manager' in group_names"
+
+    - name: Сохранение команды join для worker нод
+      set_fact:
+        join_command: "{{ cluster_init.stdout_lines[-1] | trim }}"
+      when: cluster_init is succeeded and 'central_manager' in group_names
+
+    - name: Настройка Kubeconfig для текущего пользователя
+      shell: |
+        mkdir -p $HOME/.kube
+        sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config
+        sudo chown $(id -u):$(id -g) $HOME/.kube/config
+      when: "'central_manager' in group_names"
+
+    - name: Установка Flannel CNI
+      command: "{{ kube_bin_dir }}/kubectl apply -f /tmp/kube-flannel.yml"
+      when: "'central_manager' in group_names"
+
+    - name: Добавление worker нод в кластер
+      command: "{{ hostvars['central_manager']['join_command'] }}"
+      when:
+        - "'execute_nodes' in group_names"
+        - hostvars['central_manager'].has_key('join_command')
+
+    - name: Установка пароля кластера через Job
+      k8s:
+        definition:
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: condor-password-setup
+          spec:
+            template:
+              spec:
+                containers:
+                - name: condor-password
+                  image: "{{ condor_image }}"
+                  command: ["sh", "-c"]
+                  args:
+                  - |
+                    echo "{{ condor_cluster_password }}" | condor_store_cred -c add -f /etc/condor/passwords.d/POOL
+                  volumeMounts:
+                  - name: condor-config
+                    mountPath: /etc/condor
+                volumes:
+                - name: condor-config
+                  configMap:
+                    name: htcondor-config
+                restartPolicy: OnFailure
+      when: "'central_manager' in group_names"
+
+    - name: Создание ConfigMap для конфигураций HTCondor
+      k8s:
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: htcondor-config
+          data:
+            condor_config: |
+              {% if 'central_manager' in group_names %}
+              {{ lookup('template', 'templates/condor_config.central_submit.j2') }}
+              {% elif 'execute_nodes' in group_names %}
+              {{ lookup('template', 'templates/condor_config.execute2.j2') }}
+              {% endif %}
+      when: "'central_manager' in group_names"
+
+    - name: Создание Deployment для Central Manager
+      k8s:
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: htcondor-manager
+            labels:
+              app: htcondor
+              role: manager
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: htcondor
+                role: manager
+            template:
+              metadata:
+                labels:
+                  app: htcondor
+                  role: manager
+              spec:
+                containers:
+                - name: htcondor
+                  image: "{{ condor_image }}"
+                  env:
+                  - name: CONDOR_CONFIG
+                    value: "/etc/condor/condor_config"
+                  - name: CONDOR_HOST
+                    value: "{{ central_manager_ip }}"
+                  ports:
+                  - containerPort: 9618
+                  volumeMounts:
+                  - name: condor-config
+                    mountPath: /etc/condor
+                  - name: condor-logs
+                    mountPath: /var/log/condor
+                volumes:
+                - name: condor-config
+                  configMap:
+                    name: htcondor-config
+                - name: condor-logs
+                  hostPath:
+                    path: "{{ condor_logs_dir }}"
+      when: "'central_manager' in group_names"
+
+    - name: Создание Service для Central Manager
+      k8s:
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: htcondor-manager
+          spec:
+            selector:
+              app: htcondor
+              role: manager
+            ports:
+            - protocol: TCP
+              port: 9618
+              targetPort: 9618
+      when: "'central_manager' in group_names"
+
+    - name: Создание DaemonSet для Execute Nodes
+      k8s:
+        definition:
+          apiVersion: apps/v1
+          kind: DaemonSet
+          metadata:
+            name: htcondor-execute
+          spec:
+            selector:
+              matchLabels:
+                app: htcondor
+                role: execute
+            template:
+              metadata:
+                labels:
+                  app: htcondor
+                  role: execute
+              spec:
+                containers:
+                - name: htcondor
+                  image: "{{ condor_image }}"
+                  env:
+                  - name: CONDOR_CONFIG
+                    value: "/etc/condor/condor_config"
+                  - name: CONDOR_HOST
+                    value: "htcondor-manager"
+                  ports:
+                  - containerPort: 9618
+                  volumeMounts:
+                  - name: condor-config
+                    mountPath: /etc/condor
+                  - name: condor-logs
+                    mountPath: /var/log/condor
+                volumes:
+                - name: condor-config
+                  configMap:
+                    name: htcondor-config
+                - name: condor-logs
+                  hostPath:
+                    path: "{{ condor_logs_dir }}"
+      when: "'execute_nodes' in group_names"
+
+    - name: Проверка состояния нод
+      command: "{{ kube_bin_dir }}/kubectl get nodes"
+      when: "'central_manager' in group_names"
+      register: node_status
+      changed_when: false
+      retries: 5
+      delay: 10
+
+    - name: Отладка: Состояние нод
+      debug:
+        msg: "Текущее состояние нод: {{ node_status.stdout }}"
+      when: node_status is succeeded and "'central_manager' in group_names"
+
+    - name: Проверка Pod-ов
+      command: "{{ kube_bin_dir }}/kubectl get pods -A"
+      when: "'central_manager' in group_names"
+      register: pod_status
+      changed_when: false
+      retries: 5
+      delay: 10
+
+    - name: Отладка: Состояние Pod-ов
+      debug:
+        msg: "Текущее состояние Pod-ов: {{ pod_status.stdout }}"
+      when: pod_status is succeeded and "'central_manager' in group_names"
+
+    - name: Очистка временных файлов
+      file:
+        path: "/tmp/kubernetes"
+        state: absent
+      when: "'central_manager' in group_names"
+
+    - name: Очистка временных файлов
+      file:
+        path: "/tmp/kube-flannel.yml"
+        state: absent
+      when: "'central_manager' in group_names"

@@ -21,7 +21,6 @@
       delegate_to: localhost
       run_once: yes
 
-
   tasks:
     - name: Проверка наличия curl
       package:
@@ -33,7 +32,6 @@
         path: "/tmp/kubernetes"
         state: directory
         mode: 0755
-
 
     - name: Скачивание kubelet
       get_url:
@@ -307,28 +305,29 @@
       when: "'central_manager' in group_names"
       delegate_to: central_manager
 
-#    - name: Создание Service для Execute
-#      kubernetes.core.k8s:
-#        definition:
-#          apiVersion: v1
-#          kind: Service
-#          metadata:
-#            name: htcondor-execute
-#            namespace: default
-#            labels:
-#              app: htcondor
-#              role: execute
-#          spec:
-#            selector:
-#              app: htcondor
-#              role: execute
-#            ports:
-#              - protocol: TCP
-#                port: 9620
-#                name: condor
-#            type: ClusterIP
-#      when: "'execute_nodes' in group_names"
-#      delegate_to: central_manager
+    - name: Создание Service для Execute
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: htcondor-execute
+            namespace: default
+            labels:
+              app: htcondor
+              role: execute
+          spec:
+            selector:
+              app: htcondor
+              role: execute
+            ports:
+              - protocol: TCP
+                port: 9618
+                targetPort: 9618
+                name: condor
+            type: ClusterIP
+      when: "'execute_nodes' in group_names"
+      delegate_to: central_manager
 
     - name: Создание Deployment для Central Manager
       kubernetes.core.k8s:
@@ -391,7 +390,6 @@
                         chown -R condor:condor /var/lock/condor /var/log/condor
                         chmod -R 777 /var/log/condor
                         chmod 775 /var/lock/condor
-                        apt update && apt install -y libnss-dns
                         mkdir -p /etc/condor/passwords.d
                         condor_store_cred -c add -f /etc/condor/passwords.d/POOL -p "{{ condor_cluster_password }}"
                         condor_master -f
@@ -500,12 +498,11 @@
                     command: ["/bin/bash", "-c"]
                     args:
                       - |
-                        set -x
-                        apt update && apt install -y libnss-dns
                         while ! nslookup htcondor-manager.default.svc.cluster.local; do
                           echo "Waiting for CONDOR_HOST...";
                           sleep 5;
                         done;
+
                         exec condor_master -f
                     securityContext:
                       runAsUser: 0
@@ -514,7 +511,6 @@
                   - name: condor-config
                     configMap:
                       name: htcondor-execute
-                      defaultMode: 420
                   - name: condor-logs
                     hostPath:
                       path: "{{ condor_logs_dir }}"

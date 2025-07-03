@@ -26,7 +26,6 @@ RELEASE_DIR = /usr
 LOCAL_DIR = /var
 
 ##  Where is the machine-specific local config file for each host?
-DAEMON_LIST = STARTD
 ##  If your configuration is on a shared file system, then this might be a better default
 #LOCAL_CONFIG_FILE = $(RELEASE_DIR)/etc/$(HOSTNAME).local
 ##  If the local config file is not present, is it an error? (WARNING: This is a potential security issue.)
@@ -57,12 +56,15 @@ REQUIRE_LOCAL_CONFIG_FILE = false
 ##
 ## echo 'use SECURITY:HOST_BASED' >> $(condor_config_val LOCAL_CONFIG_DIR)/00-insecure.config
 ##
-NETWORK_INTERFACE = {{ ansible_default_ipv4.address }}
-CONDOR_HOST = {{ central_manager_ip }}
-COLLECTOR_HOST = {{ central_manager_ip }}
+DAEMON_LIST = MASTER, STARTD
+NETWORK_INTERFACE = 0.0.0.0
+CONDOR_HOST = htcondor-manager.default.svc.cluster.local
+COLLECTOR_HOST = htcondor-manager.default.svc.cluster.local
 BIND_ALL_INTERFACES = False
 ALLOW_READ = *
 ALLOW_WRITE = *
+SHARED_PORT_FILE = $(LOCK)/shared_port_ad
+LOCK = /var/log/condor/locks
 ##  To expand your condor pool beyond a single host, set ALLOW_WRITE to match all of the hosts
 #ALLOW_WRITE = *.cs.wisc.edu
 ##  FLOCK_FROM defines the machines that grant access to your pool via flocking. (i.e. these machines can join you>

@@ -58,12 +58,23 @@ DAEMON_LIST = COLLECTOR, NEGOTIATOR, SCHEDD
 ##
 ## echo 'use SECURITY:HOST_BASED' >> $(condor_config_val LOCAL_CONFIG_DIR)/00-insecure.config
 ##
-CONDOR_HOST = {{ central_manager_ip }}
-NETWORK_INTERFACE = {{ central_manager_ip }}
-COLLECTOR_HOST = {{ central_manager_ip }}
+# Общие настройки
+CONDOR_HOST = htcondor-manager.default.svc.cluster.local
+NETWORK_INTERFACE = eth0
+USE_SHARED_PORT = false
+COLLECTOR_HOST = htcondor-manager.default.svc.cluster.local
+LOCK = /var/log/condor/locks
+# Безопасность
 ALLOW_READ = *
 ALLOW_WRITE = *
+HOSTALLOW_READ = *
 
+# Порты
+COLLECTOR_PORT = 9618
+SCHEDD_PORT = 9618
+STARTD_PORT = 9618
+
+# Настройки для Kubernetes
 ##  To expand your condor pool beyond a single host, set ALLOW_WRITE to match all of the hosts
 #ALLOW_WRITE = *.cs.wisc.edu
 ##  FLOCK_FROM defines the machines that grant access to your pool via flocking. (i.e. these machines can join you>
@@ -169,10 +180,10 @@ use ROLE: Execute
 
 # Configure HTCondor services to listen to port 9618 on the IPv4
 # loopback interface.
-NETWORK_INTERFACE = 192.168.56.101
+##NETWORK_INTERFACE = $CONDOR_HOST
 BIND_ALL_INTERFACES = False
-CONDOR_HOST = 192.168.56.101
-COLLECTOR_HOST = 192.168.56.101
+CONDOR_HOST = $(HOSTNAME)
+COLLECTOR_HOST = $(HOSTNAME)
 # --- SECURITY SETTINGS ---
 
 # Verify authenticity of HTCondor services by checking if they are
@@ -181,7 +192,7 @@ COLLECTOR_HOST = 192.168.56.101
 #SEC_DEFAULT_INTEGRITY = REQUIRED
 #ALLOW_DAEMON = condor@$(UID_DOMAIN)
 #ALLOW_NEGOTIATOR = condor@$(UID_DOMAIN)
-ALLOW_WRITE_COLLECTOR=$(ALLOW_WRITE) 192.168.56.105
+ALLOW_WRITE_COLLECTOR=$(ALLOW_WRITE) 
 # Configure so only user root or user condor can run condor_on,
 # condor_off, condor_restart, and condor_userprio commands to manage
 # HTCondor on this machine.
